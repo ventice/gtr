@@ -56,6 +56,7 @@ async def telegram_webhook(request: Request):
 
 @webhook_app.on_event("startup")
 async def register_webhook():
+    await app.initialize()
     await app.bot.set_webhook(url=f"{config.APP_URL}/webhook")
 
 
