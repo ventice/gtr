@@ -1,3 +1,4 @@
+from fastapi import FastAPI, Request
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -37,13 +38,30 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+app = ApplicationBuilder().token(config.BOT_TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+
+webhook_app = FastAPI()
+
+
+@webhook_app.post("/webhook")
+async def telegram_webhook(request: Request):
+    data = await request.json()
+    update = Update.de_json(data, app.bot)
+    await app.process_update(update)
+    return {"ok": True}
+
+
+@webhook_app.on_event("startup")
+async def register_webhook():
+    await app.bot.set_webhook(url=f"{config.APP_URL}/webhook")
+
+
 def main():
-    app = ApplicationBuilder().token(config.BOT_TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
     app.run_polling()
+
 
 if __name__ == "__main__":
     main()
