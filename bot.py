@@ -22,7 +22,7 @@ _FLAGS = {
 async def translate(text: str) -> str:
     translations = await prompt.translate(text)
     # Simulate an async call to OpenAI
-    return f"\n".join(f"{_FLAGS[lang]}: {text}" for lang, text in translations.items())
+    return f"\n".join(f"{_FLAGS[lang]} {text}" for lang, text in translations.items())
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
