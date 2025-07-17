@@ -6,7 +6,7 @@ import config
 
 client = AsyncOpenAI(api_key=config.OPENAI_API_KEY)
 
-_RESPONSE_PATTERN = re.compile(r"(<(..)>(.*)</\2>)", re.M | re.U)
+_RESPONSE_PATTERN = re.compile(r"(<(..)>(.*)</\2>)", re.M | re.U | re.M)
 
 async def translate(text: str) -> dict[str, str]:
     response = await client.responses.create(
