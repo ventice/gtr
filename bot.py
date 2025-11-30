@@ -1,3 +1,5 @@
+import typing
+
 from fastapi import FastAPI, Request
 from telegram import Update
 from telegram.ext import (
@@ -20,9 +22,10 @@ _FLAGS = {
 }
 
 
-async def translate(text: str) -> str:
+async def translate(text: str) -> typing.Optional[str]:
     translations = await prompt.translate(text)
-    # Simulate an async call to OpenAI
+    if translations is None:
+        return None
     return f"\n".join(f"{_FLAGS[lang]} {text}" for lang, text in translations.items())
 
 
@@ -35,6 +38,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not original_text:
         return
     translated = await translate(original_text)
+    if translated is None:
+        return
     await update.message.reply_text(
         translated,
         reply_to_message_id=update.message.message_id
