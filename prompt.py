@@ -7,7 +7,7 @@ import config
 
 client = AsyncOpenAI(api_key=config.OPENAI_API_KEY)
 
-_RESPONSE_PATTERN = re.compile(r"(<(..)>(.*)</\2>)", re.M | re.U | re.M)
+_RESPONSE_PATTERN = re.compile(r"(<(..)>(.*)</\2>)", re.M | re.U | re.S)
 
 async def translate(text: str) -> typing.Optional[dict[str, str]]:
     response = await client.responses.create(
@@ -17,6 +17,7 @@ async def translate(text: str) -> typing.Optional[dict[str, str]]:
         },
         input=text
     )
+    print(response.output_text.strip())
     if response.output_text.strip() == config.NO_TRANSLATION:
         return None
 
